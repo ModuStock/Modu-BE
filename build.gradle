@@ -17,7 +17,7 @@ plugins {
 
 }
 
-group = 'com.nklcb'
+group = 'com.ModuStock'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
