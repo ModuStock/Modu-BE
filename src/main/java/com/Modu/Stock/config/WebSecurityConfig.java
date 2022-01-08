@@ -1,5 +1,6 @@
 package com.Modu.Stock.config;
 
+import com.Modu.Stock.config.auth.Oauth2SuccessHandler;
 import com.Modu.Stock.config.jwt.JwtAuthenticationFilter;
 import com.Modu.Stock.config.jwt.JwtAuthorizationFilter;
 import com.Modu.Stock.config.jwt.SecretKey;
@@ -22,6 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
     private final SecretKey secretKey;
+    private final Oauth2SuccessHandler oauth2SuccessHandler;
 
 
     @Override
@@ -40,10 +42,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(),secretKey)) //AuthenticationManager
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),userRepository,secretKey))
                 .authorizeRequests()
+                .antMatchers("/", "/account/**", "/css/**", "/api/**", "/board/**").permitAll()
                 .antMatchers("/api/boards/**").hasRole("ADMIN")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/account/**", "/css/**", "/api/**", "/board/**").permitAll()
 //                .antMatchers("/user/**").authenticated()
 //                .antMatchers("/manager/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
                 .anyRequest().authenticated()
@@ -60,10 +62,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                  *구글 로그인이 완료된 뒤의 후처리가 필요함 1.코드받기(인증), 2.엑세스토큰(권한)
                  *사용자 프로필 정보를 가져오고, 4.그 정보를 토대로 회원가입을 시키기도 함
                  */
-//        http
-//                .oauth2Login()
-//                .loginPage("/account/login")
-//                .userInfoEndpoint();
+        http
+                .oauth2Login()
+                .loginPage("/account/login")
+                .userInfoEndpoint()
+                .and()
+                .successHandler(oauth2SuccessHandler);
 //                .userService(principalOauth2UserService);
 
 

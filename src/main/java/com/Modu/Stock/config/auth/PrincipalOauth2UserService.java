@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +80,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
        log.info("username = {}", userEntity);
        if (userEntity == null) {
-            userEntity = User.builder()
+           userEntity = User.builder()
                    .username(username)
                    .password(password)
                    .email(email)
@@ -90,21 +91,30 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                    .enabled(true)
                    .build();
 
-            log.info("PrincipalOauth2 userEntity = {]", userEntity);
+           log.info("PrincipalOauth2 userEntity = {]", userEntity);
 
            userRepository.save(userEntity);
+           List<String> rolesName = streamRolesName(userEntity);
 
            log.info("Oauth2 Join = {}", userEntity);
+
+           return new PrincipalDetails(userEntity, rolesName, oAuth2User.getAttributes());
+
        } else {
-           List<String> collect = userEntity.getUserRoles()
-                   .stream()
-                   .map(u -> u.getRole().getName())
-                   .collect(Collectors.toList());
+           List<String> collect = streamRolesName(userEntity);
            log.info("collect = {}", collect);
            return new PrincipalDetails(userEntity, collect, oAuth2User.getAttributes());
        }
 
-
-       return super.loadUser(userRequest);
     }
+
+    private List<String> streamRolesName(User userEntity) {
+        List<String> collect = userEntity.getUserRoles()
+                .stream()
+                .map(u -> u.getRole().getName())
+                .collect(Collectors.toList());
+        return collect;
+    }
+
+
 }
