@@ -12,10 +12,10 @@ public class SecretKey {
     public static String secretKey;
 
 
-    @Value("${spring.jwt.secret}")
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
+//    @Value("${spring.jwt.secret}")
+//    public void setSecretKey(String secretKey) {
+//        this.secretKey = secretKey;
+//    }
 
     public SecretKey(@Value("${spring.jwt.secret}")String value) {
         this.secretKey = value;

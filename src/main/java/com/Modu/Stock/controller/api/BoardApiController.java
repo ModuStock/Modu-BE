@@ -55,7 +55,7 @@ public class BoardApiController {
     }
 
 
-    @GetMapping("boards/all")
+    @GetMapping("/boards/all")
     public Page<UserBoardDto> findTitleAndContent(@PageableDefault(page = 0, size = 10) Pageable pageable){
         log.info("in BoardApiController");
         Page<UserBoardDto> boards = boardService.findAllBoardApi(pageable);
